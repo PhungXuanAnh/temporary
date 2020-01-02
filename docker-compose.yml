@@ -14,8 +14,10 @@ services:
         volumes:
             - ./configs:/etc/nginx/conf.d:ro
             - ./log:/var/log/nginx/
-            - ./web:/usr/share/nginx/html:ro
-        command: /bin/bash -c "nginx -g 'daemon off;'"
+            # - ./web:/usr/share/nginx/html:ro
+        command: /bin/bash -c 'mkdir -p /usr/share/nginx/html && echo "Xin chao, day la Nginx :D Leu leu tu $HOST_NAME" >> /usr/share/nginx/html/index.html && nginx -g "daemon off;"'
+        environment:
+            - HOST_NAME: "node-{{.Node.Hostname}}"
         restart: always
         logging:
             driver: "json-file"
