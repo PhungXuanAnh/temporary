@@ -5,24 +5,50 @@
 version: "3"
 
 services:
-    nginx:
-        image: nginx:1.11.6
+    # nginx:
+    #     image: nginx:1.11.6
+    #     networks:
+    #         - internal-network
+    #     ports:
+    #         - 80:80
+    #     volumes:
+    #         - ./configs:/etc/nginx/conf.d:ro
+    #         - ./log:/var/log/nginx/
+    #         - ./web:/usr/share/nginx/html:ro
+    #     command: /bin/bash -c "nginx -g 'daemon off;'"
+    #     restart: always
+    #     logging:
+    #         driver: "json-file"
+    #         options:
+    #             max-size: "100M"
+    #             max-file: "3"
+    #     deploy:
+    #         mode: global
+    #         resources:
+    #             limits:
+    #                 memory: 10M
+
+    app-sample:
+        restart: always
+        build:
+            context: .
+            dockerfile: app/Dockerfile
+        image: temporary/app-sample:0.1.0
         networks:
             - internal-network
+        hostname: app-sample
         ports:
-            - 80:80
+            - 8001:8001
         volumes:
-            - ./configs:/etc/nginx/conf.d:ro
-            - ./log:/var/log/nginx/
-            - ./web:/usr/share/nginx/html:ro
-        command: /bin/bash -c "nginx -g 'daemon off;'"
-        restart: always
+            - ./app:/build
+            - ./common:/build/common
         logging:
             driver: "json-file"
             options:
                 max-size: "100M"
                 max-file: "3"
         deploy:
+            mode: global
             resources:
                 limits:
                     memory: 10M
