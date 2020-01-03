@@ -5,7 +5,7 @@ test-local:
 	curl -i http://localhost
 
 test:
-	curl -i http://192.168.1.210
+	while true; do curl --max-time 3 http://192.168.1.210 && echo " on `date`"; sleep 1; done
 
 log-access:
 	tail -f log/access.log
