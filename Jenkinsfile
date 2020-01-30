@@ -14,9 +14,29 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'echo "Fail!"; exit 1'
+                // sh 'echo "Fail!"; exit 1'
+                sh 'echo "Fail!"; exit 0'
             }
         }
+        stage('Deploy - Staging') {
+            steps {
+                sh './deploy staging'
+                sh './run-smoke-tests'
+            }
+        }
+
+        stage('Sanity check') {
+            steps {
+                input "Does the staging environment look ok?"
+            }
+        }
+
+        stage('Deploy - Production') {
+            steps {
+                sh './deploy production'
+            }
+        }
+    }
     }
     post {
         always {
@@ -26,11 +46,14 @@ pipeline {
         }
         success {
             echo 'This will run only if successful'
+            slackSend channel: '#general',
+                  color: 'good',
+                  message: "The pipeline ${currentBuild.fullDisplayName} completed successfully."
         }
         failure {
             echo 'This will run only if failed'
             slackSend channel: '#general',
-                  color: 'good',
+                  color: 'bad',
                   message: "The pipeline ${currentBuild.fullDisplayName} completed successfully."
         }
         unstable {
