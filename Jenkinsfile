@@ -21,12 +21,17 @@ pipeline {
     post {
         always {
             echo 'This will always run'
+            echo 'One way or another, I have finished'
+            deleteDir() /* clean up our workspace */
         }
         success {
             echo 'This will run only if successful'
         }
         failure {
             echo 'This will run only if failed'
+            slackSend channel: '#general',
+                  color: 'good',
+                  message: "The pipeline ${currentBuild.fullDisplayName} completed successfully."
         }
         unstable {
             echo 'This will run only if the run was marked as unstable'
